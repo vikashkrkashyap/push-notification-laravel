@@ -1,0 +1,21 @@
+{
+  "name": "laravel-web-push-notification",
+  "description": "Send Web Push notification for laravel framework",
+  "authors": [
+    {
+      "name": "Vikash Kashyap",
+      "email": "vikashkrkashyap@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.6.4",
+    "minishlink/web-push": "dev-master"
+  },
+
+  "autoload": {
+    "psr-4": {
+      "PushNotification\\": "src"
+    }
+  }
+}
