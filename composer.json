@@ -1,5 +1,5 @@
 {
-  "name": "laravel-web-push-notification",
+  "name": "push-notification-laravel",
   "description": "Send Web Push notification for laravel framework",
   "authors": [
     {
