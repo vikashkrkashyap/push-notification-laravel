@@ -5,7 +5,16 @@ use Illuminate\Http\Request;
 
 interface PushContract
 {
-    public function registerServiceWorker(Request $request);
+    /**
+     * @param string $title
+     * @param string  $body
+     * @param null $icon
+     * @param null $link
+     * @param null $badge
+     * @param null $image
+     * @return array
+     */
+    public function sendPushNotification($title, $body, $icon = null, $link=null, $badge=null, $image=null);
 }
 
 ?>
