@@ -1,6 +1,6 @@
 <?php
 
-namespace PushNotification;
+namespace PushNotification\Provider;
 
 use Illuminate\Support\ServiceProvider;
 use PushNotification\Contracts\PushContract;
@@ -25,7 +25,7 @@ class PushNotificationServiceProvider extends ServiceProvider
             __DIR__ . '/config/pushNotification.php' => config_path('pushNotification.php'),
         ]);
 
-        require __DIR__ . '/../../vendor/autoload.php';
+        // require __DIR__ . '/../../vendor/autoload.php';
     }
 
     /**
