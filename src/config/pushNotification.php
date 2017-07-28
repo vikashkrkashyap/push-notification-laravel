@@ -34,10 +34,10 @@
        */
 
         'redis' => [
-            'host'          => env('PUSH_REDIS_HOST','REDIS_HOST'),
-            'port'          => env('PUSH_REDIS_PORT','REDIS_PORT'),
+            'host'          => env('PUSH_REDIS_HOST', env('REDIS_HOST')),
+            'port'          => env('PUSH_REDIS_PORT', env('REDIS_PORT')),
             'password'      => env('PUSH_REDIS_PASSWORD', ''),
-            'database'      => env('PUSH_REDIS_DATABASE','REDIS_DATABASE'),
+            'database'      => env('PUSH_REDIS_DATABASE', env('REDIS_DATABASE')),
             'key'           => env('PUSH_REDIS_KEY', 'push-notification')
         ]
 

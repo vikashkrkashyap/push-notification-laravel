@@ -1,6 +1,6 @@
 <?php
 
-namespace PushNotification\Provider;
+namespace PushNotification;
 
 use Illuminate\Support\ServiceProvider;
 use PushNotification\Contracts\PushContract;
@@ -17,12 +17,12 @@ class PushNotificationServiceProvider extends ServiceProvider
     {
         $this->app->bind(PushContract::class, PushNotificationController::class);
 
-        if (! $this->app->routesAreCached()) {
-            require __DIR__ . '../routes/routes.php';
-        }
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-        $configPath = __DIR__ . '/config/pushNotification.php' ;
-        $this->mergeConfigFrom($configPath, 'pushNotification.php');
+        $configPath = __DIR__ . '/config/pushNotification.php';
+        $this->publishes([
+            $configPath => config_path('pushNotification.php'),
+        ]);
 
         // require __DIR__ . '/../../vendor/autoload.php';
     }

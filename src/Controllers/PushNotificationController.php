@@ -5,6 +5,7 @@ namespace PushNotification\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Minishlink\WebPush\VAPID;
 use PushNotification\Contracts\PushContract;
@@ -31,7 +32,6 @@ class PushNotificationController extends Controller implements PushContract
         ]]);
 
         Redis::connection('push-notification');
-
 
         $this->redisKey = (new PushUtilities())->getRedisUniqueKey();
     }
