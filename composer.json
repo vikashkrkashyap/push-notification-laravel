@@ -1,5 +1,5 @@
 {
-  "name": "push-notification",
+  "name": "push-notification-laravel",
   "description": "Send Web Push notification for laravel framework",
   "authors": [
     {
@@ -7,13 +7,11 @@
       "email": "vikashkrkashyap@gmail.com"
     }
   ],
-
   "minimum-stability": "dev",
   "require": {
     "laravel/framework": "5.4.*",
     "minishlink/web-push": "dev-master"
   },
-
   "autoload": {
     "psr-4": {
       "PushNotification\\": "src/"
