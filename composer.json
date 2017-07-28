@@ -17,11 +17,6 @@
   "autoload": {
     "psr-4": {
       "PushNotification\\": "src/"
-    },
-
-    "config": {
-      "preferred-install": "dist",
-      "secure-http": false
     }
   }
 }
