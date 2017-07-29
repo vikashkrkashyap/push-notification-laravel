@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
 use PushNOtification\library\VAPID;
+use PushNOtification\library\WebPush;
 use PushNotification\Contracts\PushContract;
-use PushNotification\library\WebPush;
 use PushNotification\PushUtilities;
 
 class PushNotificationController extends Controller implements PushContract
@@ -118,6 +118,19 @@ class PushNotificationController extends Controller implements PushContract
             "message" => "Push notification sent successfully",
             "code"  => 200
         ];
+    }
+
+    private function allowedCrossOriginRequest()
+    {
+        $allowedOrigins = config('pushNotification.allowedOrigins');
+        $httpOrigin = request()->server('HTTP_ORIGIN');
+        if(in_array($httpOrigin, $allowedOrigins)){
+            header('Access-Control-Allow-Origin:'.$httpOrigin);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }
