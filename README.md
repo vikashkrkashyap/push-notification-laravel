@@ -56,10 +56,8 @@ Set up your client side of application, Download this files and add push_notific
 You need to change two variables inside push_notification.js file. At the top of this file change below two javascript variable values
 
 
-``
-var applicationServerPublicKey = {public key} (as same as .env value of key PUSH_NOTIFICATION_PUBLIC_KEY);
-var subscriptionUrl = yourserverdomain/push-notification/service-worker";
-``
+```var applicationServerPublicKey = {public key}``` [as same as .env value of key PUSH_NOTIFICATION_PUBLIC_KEY];
+```var subscriptionUrl = yourserverdomain/push-notification/service-worker"```;
 
 
 In your class from which you want to send push notification use this contract
@@ -67,7 +65,7 @@ In your class from which you want to send push notification use this contract
 ````
 public function __construct(PushContract $pushNotification)
 {
-        $this->pushNotification = $pushNotification;
+       $this->pushNotification = $pushNotification;
 }
 
 ````
