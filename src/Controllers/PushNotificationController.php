@@ -5,11 +5,10 @@ namespace PushNotification\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Minishlink\WebPush\VAPID;
+use PushNOtification\library\VAPID;
 use PushNotification\Contracts\PushContract;
-use Minishlink\WebPush\WebPush;
+use PushNotification\library\WebPush;
 use PushNotification\PushUtilities;
 
 class PushNotificationController extends Controller implements PushContract
@@ -38,14 +37,21 @@ class PushNotificationController extends Controller implements PushContract
 
     public function registerServiceWorker(Request $request)
     {
-        if($this->allowedCrossOriginRequest()) {
+        if ($this->allowedCrossOriginRequest()) {
             $swRegistration = $request->input('swRegister');
 
-            // set data to redis
+            // append to the existing data to redis
+            $existingData = json_decode(Redis::get($this->redisKey), true);
+            if (!is_null($existingData)) {
+                json_encode(array_push($existingData, $swRegistration));
+            } else {
+                $existingData = [];
+                $existingData[0] = $swRegistration;
+            }
+
             Redis::set($this->redisKey, $swRegistration);
             return response()->json(['success' => true]);
-        }
-        else {
+        } else {
             return response()->json(['success' => false]);
         }
     }
@@ -58,47 +64,52 @@ class PushNotificationController extends Controller implements PushContract
     public function sendPushNotification($title, $body, $icon = null, $link = null, $badge = null, $image = null)
     {
         $payload = [
-            "title"   => $title,
-            "body"    => $body
+            "title" => $title,
+            "body" => $body
         ];
 
-        if(isset($icon)){
-           $payload['icon'] = $title;
+        if (isset($icon)) {
+            $payload['icon'] = $title;
         }
 
-        if(isset($link)){
-           $payload['link'] = $link;
+        if (isset($link)) {
+            $payload['link'] = $link;
         }
 
-        if(isset($badge)){
+        if (isset($badge)) {
             $payload['badge'] = $badge;
         }
 
-        if(isset($image)){
+        if (isset($image)) {
             $payload['image'] = $image;
         }
 
+        $payload = json_encode($payload);
+
         // fetch data from redis
-        $swRegistration = json_decode(Redis::get($this->redisKey), true);
-        $endPoints = $swRegistration['endpoint'];
+        $swRegistrations = json_decode(Redis::get($this->redisKey), true);
 
-        $authVAPID = [
-            'VAPID' =>[
-                'subject' => 'mailto:vikashkrkashyap@gmail.com',
-                'publicKey' => config('pushNotification.publicKey'),
-                'privateKey' => config('pushNotification.privateKey')
-            ]
-        ];
+        try {
+            foreach ($swRegistrations as $swRegistration) {
+                $endPoints = $swRegistration['endpoint'];
+                $authVAPID = [
+                    'VAPID' => [
+                        'subject' => 'mailto:vikashkrkashyap@gmail.com',
+                        'publicKey' => config('pushNotification.publicKey'),
+                        'privateKey' => config('pushNotification.privateKey')
+                    ]
+                ];
 
-        try{
-            $webPush =  new WebPush($authVAPID);
-            $webPush->sendNotification($endPoints, $payload, $swRegistration['keys']['p256dh'], $swRegistration['keys']['auth'], true, [] , $authVAPID);
-        }catch (\Exception $e){
+                $webPush = new WebPush($authVAPID);
+                $webPush->sendNotification($endPoints, $payload, $swRegistration['keys']['p256dh'], $swRegistration['keys']['auth'], true, [], $authVAPID);
+                unset($swRegistrations[0]);
+            }
+        } catch (\Exception $e) {
             $error = $e->getMessage();
             return [
-                "status"=> "Failed",
+                "status" => "Failed",
                 "message" => $error,
-                "code"    => $e->getCode()
+                "code" => 500
             ];
         }
 
@@ -107,19 +118,6 @@ class PushNotificationController extends Controller implements PushContract
             "message" => "Push notification sent successfully",
             "code"  => 200
         ];
-    }
-
-    private function allowedCrossOriginRequest()
-    {
-        $allowedOrigins = config('pushNotification.allowedOrigins');
-        $httpOrigin = request()->server('HTTP_ORIGIN');
-        if(in_array($httpOrigin, $allowedOrigins)){
-            header('Access-Control-Allow-Origin:'.$httpOrigin);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
 }

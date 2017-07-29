@@ -22,8 +22,8 @@
         |
         */
 
-        'public_key' => '',
-        'private_key'=> '',
+        'publicKey' => env("PUSH_NOTIFICATION_PUBLIC_KEY"),
+        'privateKey'=> env("PUSH_NOTIFICATION_PRIVATE_KEY"),
 
         /*
         |--------------------------------------------------------------------------

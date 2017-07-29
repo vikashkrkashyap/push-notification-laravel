@@ -23,8 +23,6 @@ class PushNotificationServiceProvider extends ServiceProvider
         $this->publishes([
             $configPath => config_path('pushNotification.php'),
         ]);
-
-        // require __DIR__ . '/../../vendor/autoload.php';
     }
 
     /**
