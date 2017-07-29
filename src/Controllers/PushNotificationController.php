@@ -103,8 +103,14 @@ class PushNotificationController extends Controller implements PushContract
 
                 $webPush = new WebPush($authVAPID);
                 $webPush->sendNotification($endPoints, $payload, $swRegistration['keys']['p256dh'], $swRegistration['keys']['auth'], true, [], $authVAPID);
-                unset($swRegistrations[0]);
+
             }
+
+            // flush keys from redis if user should not preserve
+            if(!config('pushNotification.preserveUser')){
+                Redis::del($this->redisKey);
+            }
+
         } catch (\Exception $e) {
             $error = $e->getMessage();
             return [
