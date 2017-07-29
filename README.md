@@ -50,8 +50,7 @@ In ``Config/pusNotification.php`` file, set the `allowed_origin` (origin website
 
 
 
-Set up your client side of application, Download this files and add push_notification.js and include this script inside your application
-
+Set up your client side of application, Download these files [push_notification.js](https://gist.github.com/vikashkrkashyap/28caed06acc004f7d1331cecc1c93f44) and [sw.js](https://gist.github.com/vikashkrkashyap/244963f0be7f20ec64a9523d1aef3067). keep both file in the same folder and include only ``push_notification.js`` file to your main sciript file of your website, where you want to see the notification.
 
 You need to change two variables inside push_notification.js file. At the top of this file change below two javascript variable values
 
