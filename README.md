@@ -36,26 +36,31 @@ Register service provider to Config/app.php
 ``        PushNotification\PushNotificationServiceProvider::class
 ``
 
-Hit the route ``/push-notification/keys``` you will get public and private key. set those public and private keys value in .env file
+Hit the route ```/push-notification/keys``` you will get public and private key. set those public and private keys value in .env file
 In your .env file set these two values.
 
 ``PUSH_NOTIFICATION_PUBLIC_KEY={publickey}``
 
 ``PUSH_NOTIFICATION_PRIVATE_KEY={privatekey}``
 
+
 Run the command ``php artisan vendor:publish``
 
-In Config/pusNotification.php file, set the `allowed_origin` (origin website) of the website from where you client side service worker code is available.
+In ``Config/pusNotification.php`` file, set the `allowed_origin` (origin website) of the website from where you client side service worker code is available.
+
 
 
 Set up your client side of application, Download this files and add push_notification.js and include this script inside your application
 
+
 You need to change two variables inside push_notification.js file. At the top of this file change below two javascript variable values
+
 
 ``
 var applicationServerPublicKey = {public key} (as same as .env value of key PUSH_NOTIFICATION_PUBLIC_KEY);
 var subscriptionUrl = yourserverdomain/push-notification/service-worker";
 ``
+
 
 In your class from which you want to send push notification use this contract
 
@@ -70,7 +75,7 @@ public function __construct(PushContract $pushNotification)
 finally call this function in your class
 
 ``
-    $this->pushNotification->sendPushNotification($title, $body, $icon = null, $link=null, $badge=null, $image=null);
+$this->pushNotification->sendPushNotification($title, $body, $icon = null, $link=null, $badge=null, $image=null);
 ``
 
 
