@@ -5,9 +5,10 @@ namespace PushNotification\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use PushNOtification\library\VAPID;
-use PushNOtification\library\WebPush;
+use PushNotification\library\VAPID;
+use PushNotification\library\WebPush;
 use PushNotification\Contracts\PushContract;
 use PushNotification\PushUtilities;
 
@@ -37,19 +38,18 @@ class PushNotificationController extends Controller implements PushContract
 
     public function registerServiceWorker(Request $request)
     {
+
+
         if ($this->allowedCrossOriginRequest()) {
-            $swRegistration = $request->input('swRegister');
+            $swRegistration = json_decode($request->input('swRegister'), true);
 
             // append to the existing data to redis
-            $existingData = json_decode(Redis::get($this->redisKey), true);
-            if (!is_null($existingData)) {
-                json_encode(array_push($existingData, $swRegistration));
-            } else {
-                $existingData = [];
-                $existingData[0] = $swRegistration;
+            $existingData = is_null(Redis::get($this->redisKey)) ? [] : json_decode(Redis::get($this->redisKey), true);
+            if(!in_array($swRegistration['keys']['auth'], $existingData)){
+                $existingData[$swRegistration['keys']['auth']] =  $swRegistration;
             }
 
-            Redis::set($this->redisKey, $swRegistration);
+            Redis::set($this->redisKey, json_encode($existingData));
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);
@@ -88,6 +88,7 @@ class PushNotificationController extends Controller implements PushContract
 
         // fetch data from redis
         $swRegistrations = json_decode(Redis::get($this->redisKey), true);
+        Log::info($swRegistrations);
 
         try {
             foreach ($swRegistrations as $swRegistration) {
@@ -123,7 +124,8 @@ class PushNotificationController extends Controller implements PushContract
     private function allowedCrossOriginRequest()
     {
         $allowedOrigins = config('pushNotification.allowedOrigins');
-        $httpOrigin = request()->server('HTTP_ORIGIN');
+        $httpOrigin = $this->getHttpOrigin();
+
         if(in_array($httpOrigin, $allowedOrigins)){
             header('Access-Control-Allow-Origin:'.$httpOrigin);
             return true;
@@ -131,6 +133,25 @@ class PushNotificationController extends Controller implements PushContract
         else {
             return false;
         }
+    }
+
+    private function getHttpOrigin()
+    {
+        if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
+            $origin = $_SERVER['HTTP_ORIGIN'];
+        }
+        else if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+            $origin = $_SERVER['HTTP_REFERER'];
+        } else {
+            $origin = $_SERVER['REMOTE_ADDR'];
+        }
+
+        return $this->url($origin);
+    }
+
+    private function url($url) {
+        $result = parse_url($url);
+        return $result['scheme']."://".$result['host'];
     }
 
 }
