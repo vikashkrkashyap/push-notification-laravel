@@ -57,6 +57,7 @@ You need to change two variables inside push_notification.js file. At the top of
 
 
 ```var applicationServerPublicKey = {public key}``` [as same as .env value of key PUSH_NOTIFICATION_PUBLIC_KEY];
+
 ```var subscriptionUrl = yourserverdomain/push-notification/service-worker"```;
 
 
